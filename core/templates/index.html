@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisan - Learn Languages</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+                'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen {
+            padding: 40px 30px;
+            text-align: center;
+            min-height: 500px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Typewriter Screen */
+        .typewriter-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .typewriter-text {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typewriter {
+            border-right: 3px solid white;
+            padding-right: 5px;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% {
+                border-right-color: white;
+            }
+            50%, 100% {
+                border-right-color: transparent;
+            }
+        }
+
+        .username-display {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .loading-dots {
+            font-size: 20px;
+            letter-spacing: 5px;
+            animation: dotsAnimation 1.5s infinite;
+        }
+
+        @keyframes dotsAnimation {
+            0%, 20% {
+                content: '.';
+            }
+            40% {
+                content: '..';
+            }
+            60%, 100% {
+                content: '...';
+            }
+        }
+
+        /* Question Screens */
+        .question-screen {
+            background: white;
+        }
+
+        .question-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .emoji {
+            font-size: 50px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f5f3ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:active {
+            transform: translateY(0);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .success-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .success-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff5f5;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .screen {
+                padding: 30px 20px;
+                min-height: 400px;
+            }
+
+            .typewriter-text {
+                font-size: 24px;
+            }
+
+            .question-title {
+                font-size: 20px;
+            }
+
+            .success-emoji {
+                font-size: 60px;
+            }
+
+            .success-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            font-size: 20px;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotateZ(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(400px) rotateZ(720deg) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Typewriter Screen -->
+        <div class="screen typewriter-screen active" id="typewriterScreen">
+            <div class="typewriter-text">
+                <span class="typewriter" id="typewriterText"></span>
+            </div>
+            <div class="username-display" id="usernameDisplay"></div>
+            <div class="loading-dots" style="margin-top: 30px;">●●●</div>
+        </div>
+
+        <!-- Language Choice Screen -->
+        <div class="screen question-screen" id="languageChoiceScreen">
+            <span class="emoji">🌍</span>
+            <h2 class="question-title">What language do you speak?</h2>
+            <div class="options-grid" id="languageChoiceGrid">
+                <button class="option-btn" data-value="english" onclick="selectLanguageSpoken('english')">🇺🇸 English</button>
+                <button class="option-btn" data-value="amharic" onclick="selectLanguageSpoken('amharic')">🇪🇹 Amharic (አማርኛ)</button>
+                <button class="option-btn" data-value="oromo" onclick="selectLanguageSpoken('oromo')">🇪🇹 Afan Oromo (Afaan Oromoo)</button>
+                <button class="option-btn" data-value="somali" onclick="selectLanguageSpoken('somali')">🇸🇴 Af Somali</button>
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Language to Learn Screen -->
+        <div class="screen question-screen" id="languageLearnScreen">
+            <span class="emoji">📚</span>
+            <h2 class="question-title" id="learnQuestionTitle">What would you like to learn?</h2>
+            <div class="options-grid" id="languageLearnGrid"></div>
+            <div class="error-message" id="errorMessage2"></div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="screen success-screen" id="successScreen">
+            <div class="success-emoji">🎉</div>
+            <h2 class="success-title" id="successTitle">Let's Get Started!</h2>
+            <p class="success-subtitle" id="successMessage">You're all set to begin your language journey with Lisan.</p>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="startLearning()">
+                    <span id="startBtnText">Start Learning</span>
+                    <span class="loading" id="startBtnLoader" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== APP STATE =====
+        let appState = {
+            user: null,
+            spokenLanguage: null,
+            languageToLearn: null,
+            backendUrl: 'http://localhost:8000', // Change this to your Django backend URL
+        };
+
+        // ===== TELEGRAM INITIALIZATION =====
+        function initializeTelegram() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const webApp = window.Telegram.WebApp;
+                webApp.ready();
+
+                // Get user data from Telegram
+                const userData = webApp.initDataUnsafe?.user || {
+                    id: 123456789,
+                    first_name: 'User',
+                    username: 'anonymous',
+                };
+
+                appState.user = {
+                    id: userData.id,
+                    firstName: userData.first_name,
+                    username: userData.username || userData.first_name,
+                };
+
+                console.log('[v0] Telegram User Data:', appState.user);
+            } else {
+                // Fallback for non-Telegram environment (testing)
+                appState.user = {
+                    id: 123456789,
+                    firstName: 'User',
+                    username: 'Friend',
+                };
+                console.log('[v0] Using fallback user data (not in Telegram)');
+            }
+        }
+
+        // ===== TYPEWRITER EFFECT =====
+        function typewriterEffect() {
+            const greetings = [
+                { text: 'ሰላም', lang: 'Amharic' },
+                { text: 'Salaam', lang: 'Afan Oromo' },
+                { text: 'Salaam', lang: 'Af Somali' },
+                { text: 'Hello', lang: 'English' },
+            ];
+
+            const typewriterText = document.getElementById('typewriterText');
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            const username = appState.user.firstName || appState.user.username || 'Friend';
+
+            let fullText = '';
+            let currentIndex = 0;
+
+            function type() {
+                if (currentIndex < greetings.length) {
+                    const greeting = greetings[currentIndex];
+                    const displayText = greeting.text;
+
+                    if (fullText.length < displayText.length) {
+                        fullText += displayText[fullText.length];
+                        typewriterText.textContent = fullText;
+                    } else {
+                        // Pause before adding next greeting
+                        if (currentIndex < greetings.length - 1) {
+                            setTimeout(() => {
+                                fullText = '';
+                                currentIndex++;
+                                type();
+                            }, 600);
+                            return;
+                        } else {
+                            // Show username
+                            usernameDisplay.textContent = `Welcome back, ${username}!`;
+                            usernameDisplay.style.opacity = '1';
+
+                            // Play success sound
+                            playSound('success');
+
+                            // Move to next screen
+                            setTimeout(() => {
+                                showScreen('languageChoiceScreen');
+                            }, 1500);
+                            return;
+                        }
+                    }
+                }
+                requestAnimationFrame(type);
+            }
+
+            type();
+        }
+
+        // ===== AUDIO FUNCTION =====
+        function playSound(type) {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'success') {
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'click') {
+                oscillator.frequency.value = 600;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.15);
+            }
+        }
+
+        // ===== SCREEN NAVIGATION =====
+        function showScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // ===== LANGUAGE SELECTION =====
+        function selectLanguageSpoken(language) {
+            playSound('click');
+            appState.spokenLanguage = language;
+
+            // Update button states
+            document.querySelectorAll('#languageChoiceScreen .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.closest('.option-btn').classList.add('selected');
+
+            setTimeout(() => {
+                populateLanguageLearnOptions();
+                showScreen('languageLearnScreen');
+            }, 300);
+        }
+
+        // ===== POPULATE LANGUAGE TO LEARN OPTIONS =====
+        function populateLanguageLearnOptions() {
+            const languages = [
+                { value: 'english', label: '🇺🇸 English' },
+                { value: 'amharic', label: '🇪🇹 Amharic (አማርኛ)' },
+                { value: 'oromo', label: '🇪🇹 Afan Oromo (Afaan Oromoo)' },
+                { value: 'somali', label: '🇸🇴 Af Somali' },
+            ];
+
+            // Filter out the spoken language
+            const availableLanguages = languages.filter(
+                lang => lang.value !== appState.spokenLanguage
+            );
+
+            const grid = document.getElementById('languageLearnGrid');
+            grid.innerHTML = '';
+
+            availableLanguages.forEach(lang => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = lang.label;
+                btn.onclick = () => selectLanguageToLearn(lang.value, btn);
+                grid.appendChild(btn);
+            });
+
+            // Update title
+            const spokenLangMap = {
+                english: 'English',
+                amharic: 'Amharic',
+                oromo: 'Afan Oromo',
+                somali: 'Af Somali',
+            };
+            document.getElementById('learnQuestionTitle').textContent =
+                `What would you like to learn?`;
+        }
+
+        // ===== SELECT LANGUAGE TO LEARN =====
+        function selectLanguageToLearn(language, buttonElement) {
+            playSound('click');
+            appState.languageToLearn = language;
+
+            // Update button states
+            document.querySelectorAll('#languageLearnScreen .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            buttonElement.classList.add('selected');
+
+            setTimeout(() => {
+                showSuccessScreen();
+                playSound('success');
+                createConfetti();
+            }, 300);
+        }
+
+        // ===== SHOW SUCCESS SCREEN =====
+        function showSuccessScreen() {
+            const languageMap = {
+                english: 'English',
+                amharic: 'Amharic',
+                oromo: 'Afan Oromo',
+                somali: 'Af Somali',
+            };
+
+            const spokenLang = languageMap[appState.spokenLanguage];
+            const learnLang = languageMap[appState.languageToLearn];
+
+            document.getElementById('successTitle').textContent = '🎉 Perfect!';
+            document.getElementById('successMessage').textContent =
+                `You selected ${learnLang} as your next language to learn. Your journey starts now, ${appState.user.firstName}!`;
+
+            showScreen('successScreen');
+        }
+
+        // ===== CREATE CONFETTI =====
+        function createConfetti() {
+            const emojis = ['🎉', '⭐', '🌟', '✨', '🚀', '📚', '🌍', '💫'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-20px';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+
+        // ===== SEND DATA TO BACKEND =====
+        async function startLearning() {
+            const startBtn = document.querySelector('#successScreen .btn-primary');
+            const btnText = document.getElementById('startBtnText');
+            const btnLoader = document.getElementById('startBtnLoader');
+
+            startBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline-block';
+
+            try {
+                console.log('[v0] Sending user data to backend:', {
+                    telegramId: appState.user.id,
+                    firstName: appState.user.firstName,
+                    username: appState.user.username,
+                    spokenLanguage: appState.spokenLanguage,
+                    languageToLearn: appState.languageToLearn,
+                });
+
+                const response = await fetch(`${appState.backendUrl}/api/users/onboard/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        telegram_id: appState.user.id,
+                        first_name: appState.user.firstName,
+                        username: appState.user.username,
+                        spoken_language: appState.spokenLanguage,
+                        language_to_learn: appState.languageToLearn,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('[v0] Backend response successful:', data);
+                    btnText.textContent = '✓ Done! Loading...';
+                    btnText.style.display = 'inline';
+                    btnLoader.style.display = 'none';
+
+                    // Simulate loading and transition
+                    setTimeout(() => {
+                        alert('Welcome to Lisan! Your learning journey begins. 🌍');
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Failed to save data');
+                }
+            } catch (error) {
+                console.error('[v0] Error:', error);
+                btnText.textContent = 'Start Learning';
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+                startBtn.disabled = false;
+                alert('❌ Error: ' + error.message + '\n\nMake sure your Django backend is running at ' + appState.backendUrl);
+            }
+        }
+
+        // ===== INITIALIZE APP =====
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[v0] App initializing...');
+            initializeTelegram();
+            typewriterEffect();
+        });
+    </script>
+</body>
