@@ -16,7 +16,8 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
                 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
                 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,6 +25,22 @@
             padding: 20px;
             font-weight: 500;
             color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 255, 255, 0.05) 35px, rgba(255, 255, 255, 0.05) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255, 255, 255, 0.08) 35px, rgba(255, 255, 255, 0.08) 70px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
@@ -31,9 +48,11 @@
             max-width: 500px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(255, 165, 0, 0.3);
             overflow: hidden;
             animation: slideUp 0.5s ease-out;
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes slideUp {
@@ -48,13 +67,13 @@
         }
 
         .screen {
-            padding: 40px 30px;
+            padding: 60px 40px;
             text-align: center;
             min-height: 500px;
             display: none;
             flex-direction: column;
             justify-content: center;
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .screen.active {
@@ -70,26 +89,356 @@
             }
         }
 
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading-logo {
+            font-size: 80px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .loading-bar-wrapper {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            background: white;
+            animation: barFill 2.5s ease-in-out forwards;
+            border-radius: 10px;
+        }
+
+        @keyframes barFill {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: dotBounce 1.4s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dotBounce {
+            0%, 80%, 100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+            40% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ===== GREETING SCREEN ===== */
+        .greeting-screen {
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .greeting-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            animation: backgroundShift 8s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .greeting-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .greeting-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .greeting-header {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            animation: fadeInDown 0.8s ease-out 0.2s backwards;
+        }
+
+        .typewriter-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-height: 160px;
+            justify-content: center;
+        }
+
+        .typewriter-greetings {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100px;
+        }
+
+        .typewriter-text {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: white;
+            text-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            position: relative;
+            padding: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeIn 0.6s ease-out 0.5s backwards;
+        }
+
+        .greeting-word {
+            display: inline-block;
+            position: relative;
+        }
+
+        .greeting-word.active {
+            animation: typeWriter 0.8s steps(15, end) ease-out;
+        }
+
+        @keyframes typeWriter {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+            to {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        .greeting-word::after {
+            content: '|';
+            position: absolute;
+            right: -15px;
+            top: 0;
+            font-weight: 900;
+            color: white;
+            animation: blinkCursor 0.7s infinite;
+            opacity: 0;
+        }
+
+        .greeting-word.active::after {
+            opacity: 1;
+        }
+
+        @keyframes blinkCursor {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .username-display {
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: white;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-left: 12px;
+            animation: slideInUp 0.8s ease-out 0.5s backwards;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .greeting-sparkle {
+            display: inline-block;
+            font-size: 48px;
+            margin-left: 10px;
+            animation: sparkleRotate 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkleRotate {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: rotate(20deg) scale(1.1);
+            }
+        }
+
+        .greeting-hint {
+            font-size: 14px;
+            opacity: 0.9;
+            animation: pulse 2s ease-in-out 4s infinite;
+            letter-spacing: 0.5px;
+            margin-top: 30px;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
         /* Typewriter Screen */
         .typewriter-screen {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
             color: white;
         }
 
         .typewriter-text {
-            font-size: 28px;
+            font-size: 48px;
             font-weight: 700;
             margin-bottom: 20px;
             min-height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
         }
 
         .typewriter {
-            border-right: 3px solid white;
-            padding-right: 5px;
+            border-right: 4px solid white;
+            padding-right: 8px;
             animation: blink 0.7s infinite;
+            font-weight: 800;
         }
 
         @keyframes blink {
@@ -101,122 +450,201 @@
             }
         }
 
-        .username-display {
-            font-size: 18px;
-            opacity: 0.9;
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        .loading-dots {
-            font-size: 20px;
-            letter-spacing: 5px;
-            animation: dotsAnimation 1.5s infinite;
-        }
-
-        @keyframes dotsAnimation {
-            0%, 20% {
-                content: '.';
-            }
-            40% {
-                content: '..';
-            }
-            60%, 100% {
-                content: '...';
-            }
-        }
-
         /* Question Screens */
         .question-screen {
-            background: white;
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+            min-height: 100vh;
+        }
+
+        .question-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100%;
+            padding: 40px 20px 80px 20px;
+            overflow-y: auto;
         }
 
         .question-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 30px;
-            line-height: 1.3;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-align: center;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideDown 0.6s ease-out;
         }
 
-        .emoji {
-            font-size: 50px;
-            margin-bottom: 20px;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 40px;
+            letter-spacing: 0.5px;
+            animation: slideDown 0.6s ease-out 0.1s backwards;
+        }
+
+        .emoji-display {
+            font-size: 85px;
+            margin-bottom: 35px;
             display: block;
+            animation: bounceEmoji 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+        }
+
+        @keyframes bounceEmoji {
+            0% {
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .options-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .options-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .options-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .options-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .option-btn {
-            padding: 16px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            padding: 20px 24px;
+            border: none;
+            border-radius: 16px;
             background: white;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 17px;
+            font-weight: 700;
             color: #333;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            letter-spacing: -0.3px;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
         }
 
         .option-btn:hover {
-            border-color: #667eea;
-            background: #f5f3ff;
-            transform: translateY(-2px);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+            border-bottom: 4px solid #FFA500;
+        }
+
+        .option-btn:hover::before {
+            left: 100%;
         }
 
         .option-btn:active {
-            transform: translateY(0);
+            transform: translateY(-2px);
         }
 
         .option-btn.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
             color: white;
-            border-color: transparent;
+            box-shadow: 0 12px 30px rgba(255, 165, 0, 0.4);
+            animation: selectPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes selectPulse {
+            0% {
+                transform: scale(0.95);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* Success Screen */
         .success-screen {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
             color: white;
         }
 
         .success-emoji {
-            font-size: 80px;
+            font-size: 100px;
             margin-bottom: 20px;
-            animation: bounce 0.6s ease-out;
+            animation: celebrateBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes bounce {
+        @keyframes celebrateBounce {
             0% {
-                transform: scale(0.3);
+                transform: scale(0) rotate(-45deg);
                 opacity: 0;
             }
             50% {
-                transform: scale(1.1);
+                transform: scale(1.2) rotate(10deg);
             }
             100% {
-                transform: scale(1);
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
         }
 
         .success-title {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             margin-bottom: 15px;
         }
 
         .success-subtitle {
             font-size: 16px;
-            opacity: 0.9;
+            opacity: 0.95;
             margin-bottom: 30px;
             line-height: 1.6;
         }
@@ -229,9 +657,9 @@
 
         .btn {
             flex: 1;
-            padding: 14px 24px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -240,31 +668,32 @@
 
         .btn-primary {
             background: white;
-            color: #667eea;
+            color: #FFA500;
+            font-weight: 700;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             color: white;
-            border: 2px solid white;
+            border: 2.5px solid white;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-3px);
         }
 
         .btn-secondary:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .loading {
@@ -297,36 +726,13 @@
             display: block;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .screen {
-                padding: 30px 20px;
-                min-height: 400px;
-            }
-
-            .typewriter-text {
-                font-size: 24px;
-            }
-
-            .question-title {
-                font-size: 20px;
-            }
-
-            .success-emoji {
-                font-size: 60px;
-            }
-
-            .success-title {
-                font-size: 24px;
-            }
-        }
-
         /* Confetti Animation */
         .confetti {
             position: fixed;
             pointer-events: none;
-            font-size: 20px;
-            animation: confettiFall 3s ease-out forwards;
+            font-size: 24px;
+            animation: confettiFall 2.5s ease-out forwards;
+            z-index: 1000;
         }
 
         @keyframes confettiFall {
@@ -335,42 +741,127 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(400px) rotateZ(720deg) scale(0);
+                transform: translateY(500px) rotateZ(720deg) scale(0);
                 opacity: 0;
+            }
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 165, 0, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .screen {
+                padding: 30px 20px;
+                min-height: 400px;
+            }
+
+            .typewriter-text {
+                font-size: 36px;
+            }
+
+            .question-title {
+                font-size: 22px;
+            }
+
+            .emoji-display {
+                font-size: 60px;
+            }
+
+            .success-emoji {
+                font-size: 80px;
+            }
+
+            .success-title {
+                font-size: 28px;
+            }
+
+            .greeting-text {
+                font-size: 28px;
+            }
+
+            .username-text {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Typewriter Screen -->
-        <div class="screen typewriter-screen active" id="typewriterScreen">
-            <div class="typewriter-text">
-                <span class="typewriter" id="typewriterText"></span>
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Loading Screen -->
+        <div class="screen loading-screen active" id="loadingScreen">
+            <div class="loading-container">
+                <div class="loading-logo">Lisan</div>
+                <div class="loading-progress">
+                    <div class="loading-bar-wrapper">
+                        <div class="loading-bar-fill"></div>
+                    </div>
+                    <div class="loading-text">Preparing your journey...</div>
+                    <div class="loading-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
             </div>
-            <div class="username-display" id="usernameDisplay"></div>
-            <div class="loading-dots" style="margin-top: 30px;">●●●</div>
+        </div>
+
+        <!-- Greeting Screen -->
+        <div class="screen greeting-screen" id="greetingScreen">
+            <div class="greeting-container">
+                <div class="greeting-hero">
+                    <div class="greeting-header">Welcome to Lisan</div>
+                    <div class="typewriter-container">
+                        <div class="typewriter-text" id="typewriterText">
+                            <span class="greeting-word active" id="greetingWord">Hello</span>
+                            <span class="username-display" id="userGreeting">Friend</span>
+                            <span class="greeting-sparkle">✨</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="greeting-hint">↓ Tap to begin your learning journey</div>
+            </div>
         </div>
 
         <!-- Language Choice Screen -->
         <div class="screen question-screen" id="languageChoiceScreen">
-            <span class="emoji">🌍</span>
-            <h2 class="question-title">What language do you speak?</h2>
-            <div class="options-grid" id="languageChoiceGrid">
-                <button class="option-btn" data-value="english" onclick="selectLanguageSpoken('english')">🇺🇸 English</button>
-                <button class="option-btn" data-value="amharic" onclick="selectLanguageSpoken('amharic')">🇪🇹 Amharic (አማርኛ)</button>
-                <button class="option-btn" data-value="oromo" onclick="selectLanguageSpoken('oromo')">🇪🇹 Afan Oromo (Afaan Oromoo)</button>
-                <button class="option-btn" data-value="somali" onclick="selectLanguageSpoken('somali')">🇸🇴 Af Somali</button>
+            <div class="question-content">
+                <span class="emoji-display">🗣️</span>
+                <h2 class="question-title">What's your native language?</h2>
+                <p class="question-subtitle">We'll customize your learning experience</p>
+                <div class="options-grid" id="languageChoiceGrid">
+                    <button class="option-btn" data-value="english" onclick="selectLanguageSpoken(event, 'english')">🇬🇧 English</button>
+                    <button class="option-btn" data-value="amharic" onclick="selectLanguageSpoken(event, 'amharic')">🇪🇹 Amharic</button>
+                    <button class="option-btn" data-value="oromo" onclick="selectLanguageSpoken(event, 'oromo')">🇪🇹 Afan Oromo</button>
+                    <button class="option-btn" data-value="somali" onclick="selectLanguageSpoken(event, 'somali')">🇸🇴 Af Somali</button>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
             </div>
-            <div class="error-message" id="errorMessage"></div>
         </div>
 
         <!-- Language to Learn Screen -->
         <div class="screen question-screen" id="languageLearnScreen">
-            <span class="emoji">📚</span>
-            <h2 class="question-title" id="learnQuestionTitle">What would you like to learn?</h2>
-            <div class="options-grid" id="languageLearnGrid"></div>
-            <div class="error-message" id="errorMessage2"></div>
+            <div class="question-content">
+                <span class="emoji-display">📚</span>
+                <h2 class="question-title" id="learnQuestionTitle">What would you like to master?</h2>
+                <p class="question-subtitle">Choose the language you want to learn</p>
+                <div class="options-grid" id="languageLearnGrid"></div>
+                <div class="error-message" id="errorMessage2"></div>
+            </div>
         </div>
 
         <!-- Success Screen -->
@@ -389,124 +880,198 @@
 
     <script>
         // ===== APP STATE =====
+        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const defaultBackendUrl = isLocalHost
+            ? `${window.location.protocol}//${window.location.hostname}:8000`
+            : window.location.origin;
+
         let appState = {
             user: null,
             spokenLanguage: null,
             languageToLearn: null,
-            backendUrl: 'http://localhost:8000', // Change this to your Django backend URL
+            backendUrl: defaultBackendUrl,
         };
 
-        // ===== TELEGRAM INITIALIZATION =====
+        // ===== TELEGRAM INITIALIZATION WITH LOADING SCREEN =====
         function initializeTelegram() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const webApp = window.Telegram.WebApp;
-                webApp.ready();
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        const webApp = window.Telegram.WebApp;
+                        webApp.ready();
 
-                // Get user data from Telegram
-                const userData = webApp.initDataUnsafe?.user || {
-                    id: 123456789,
-                    first_name: 'User',
-                    username: 'anonymous',
-                };
+                        const userData = webApp.initDataUnsafe?.user || {
+                            id: 123456789,
+                            first_name: 'User',
+                            username: 'anonymous',
+                        };
 
-                appState.user = {
-                    id: userData.id,
-                    firstName: userData.first_name,
-                    username: userData.username || userData.first_name,
-                };
+                        appState.user = {
+                            id: userData.id,
+                            firstName: userData.first_name,
+                            username: userData.username || userData.first_name,
+                        };
 
-                console.log('[v0] Telegram User Data:', appState.user);
-            } else {
-                // Fallback for non-Telegram environment (testing)
-                appState.user = {
-                    id: 123456789,
-                    firstName: 'User',
-                    username: 'Friend',
-                };
-                console.log('[v0] Using fallback user data (not in Telegram)');
-            }
-        }
-
-        // ===== TYPEWRITER EFFECT =====
-        function typewriterEffect() {
-            const greetings = [
-                { text: 'ሰላም', lang: 'Amharic' },
-                { text: 'Salaam', lang: 'Afan Oromo' },
-                { text: 'Salaam', lang: 'Af Somali' },
-                { text: 'Hello', lang: 'English' },
-            ];
-
-            const typewriterText = document.getElementById('typewriterText');
-            const usernameDisplay = document.getElementById('usernameDisplay');
-            const username = appState.user.firstName || appState.user.username || 'Friend';
-
-            let fullText = '';
-            let currentIndex = 0;
-
-            function type() {
-                if (currentIndex < greetings.length) {
-                    const greeting = greetings[currentIndex];
-                    const displayText = greeting.text;
-
-                    if (fullText.length < displayText.length) {
-                        fullText += displayText[fullText.length];
-                        typewriterText.textContent = fullText;
+                        console.log('[v0] Telegram User Data:', appState.user);
                     } else {
-                        // Pause before adding next greeting
-                        if (currentIndex < greetings.length - 1) {
-                            setTimeout(() => {
-                                fullText = '';
-                                currentIndex++;
-                                type();
-                            }, 600);
-                            return;
-                        } else {
-                            // Show username
-                            usernameDisplay.textContent = `Welcome back, ${username}!`;
-                            usernameDisplay.style.opacity = '1';
-
-                            // Play success sound
-                            playSound('success');
-
-                            // Move to next screen
-                            setTimeout(() => {
-                                showScreen('languageChoiceScreen');
-                            }, 1500);
-                            return;
-                        }
+                        appState.user = {
+                            id: 123456789,
+                            firstName: 'Ahmed',
+                            username: 'Ahmed_Khan',
+                        };
+                        console.log('[v0] Using fallback user data (not in Telegram)');
                     }
-                }
-                requestAnimationFrame(type);
-            }
-
-            type();
+                    resolve();
+                }, 2.5);
+            });
         }
 
-        // ===== AUDIO FUNCTION =====
-        function playSound(type) {
-            // Create a simple beep sound using Web Audio API
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+        // ===== TRANSITION TO GREETING SCREEN (AFTER USERNAME RECEIVED) =====
+        function transitionToGreeting() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const greetingScreen = document.getElementById('greetingScreen');
+            const userGreeting = document.getElementById('userGreeting');
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+            loadingScreen.style.animation = 'fadeOut 0.6s ease-out forwards';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                greetingScreen.classList.add('active');
+                userGreeting.textContent = appState.user.firstName;
+                startTypewriterAnimation();
+            }, 600);
+        }
 
-            if (type === 'success') {
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            } else if (type === 'click') {
-                oscillator.frequency.value = 600;
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.15);
+        // ===== CYCLING TYPEWRITER ANIMATION =====
+        const greetings = ['ሰላም', 'Salaam', 'ሙሃዋ', 'Hello'];
+        let currentGreetingIndex = 0;
+
+        function startTypewriterAnimation() {
+            const greetingWord = document.getElementById('greetingWord');
+            
+            function cycleGreetings() {
+                greetingWord.textContent = greetings[currentGreetingIndex];
+                greetingWord.classList.remove('active');
+                
+                // Trigger reflow to restart animation
+                void greetingWord.offsetWidth;
+                greetingWord.classList.add('active');
+                
+                currentGreetingIndex = (currentGreetingIndex + 1) % greetings.length;
             }
+
+            // Start immediately
+            cycleGreetings();
+
+            // Cycle every 1.5 seconds indefinitely
+            setInterval(cycleGreetings, 1500);
+        }
+
+
+        // ===== TRANSITION FROM GREETING TO MAIN CONTENT =====
+        function transitionToLanguageSelection() {
+            const greetingScreen = document.getElementById('greetingScreen');
+            const languageChoiceScreen = document.getElementById('languageChoiceScreen');
+
+            playHappyClick();
+            greetingScreen.style.animation = 'fadeOut 0.6s ease-out forwards';
+            setTimeout(() => {
+                greetingScreen.style.display = 'none';
+                languageChoiceScreen.classList.add('active');
+            }, 600);
+        }
+
+        // ===== HAPPY CLICK SOUND =====
+        function playHappyClick() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } catch (e) {
+                console.log('[v0] Audio not available');
+            }
+        }
+
+        // ===== SUCCESS SOUND =====
+        function playSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                const notes = [600, 800, 1000];
+                const duration = 0.15;
+                
+                notes.forEach((freq, index) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, now + index * duration);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + index * duration + duration);
+                    
+                    osc.start(now + index * duration);
+                    osc.stop(now + index * duration + duration);
+                });
+            } catch (e) {
+                console.log('[v0] Audio not available');
+            }
+        }
+
+        // ===== CONFETTI SOUND =====
+        function playConfettiSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                for (let i = 0; i < 4; i++) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.value = 800 + i * 200;
+                    gain.gain.setValueAtTime(0.12, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.2);
+                    
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.2);
+                }
+            } catch (e) {
+                console.log('[v0] Audio not available');
+            }
+        }
+
+        // ===== SHOW GREETING SCREEN =====
+        function showGreetingScreen() {
+            const username = appState.user.firstName || appState.user.username || 'Friend';
+            document.getElementById('userGreeting').textContent = username + ' 🚀';
+            
+            playSuccessSound();
+            showScreen('greetingScreen');
+
+            document.getElementById('greetingScreen').addEventListener('click', () => {
+                playHappyClick();
+                showScreen('languageChoiceScreen');
+            });
         }
 
         // ===== SCREEN NAVIGATION =====
@@ -517,32 +1082,34 @@
         }
 
         // ===== LANGUAGE SELECTION =====
-        function selectLanguageSpoken(language) {
-            playSound('click');
+        function selectLanguageSpoken(event, language) {
+            playHappyClick();
             appState.spokenLanguage = language;
 
-            // Update button states
-            document.querySelectorAll('#languageChoiceScreen .option-btn').forEach(btn => {
-                btn.classList.remove('selected');
+            const btn = event.target.closest('.option-btn');
+            
+            document.querySelectorAll('#languageChoiceScreen .option-btn').forEach(b => {
+                b.classList.remove('selected');
             });
-            event.target.closest('.option-btn').classList.add('selected');
+            btn.classList.add('selected');
+
+            createRipple(event, btn);
 
             setTimeout(() => {
                 populateLanguageLearnOptions();
                 showScreen('languageLearnScreen');
-            }, 300);
+            }, 400);
         }
 
         // ===== POPULATE LANGUAGE TO LEARN OPTIONS =====
         function populateLanguageLearnOptions() {
             const languages = [
-                { value: 'english', label: '🇺🇸 English' },
+                { value: 'english', label: '🇬🇧 English' },
                 { value: 'amharic', label: '🇪🇹 Amharic (አማርኛ)' },
                 { value: 'oromo', label: '🇪🇹 Afan Oromo (Afaan Oromoo)' },
                 { value: 'somali', label: '🇸🇴 Af Somali' },
             ];
 
-            // Filter out the spoken language
             const availableLanguages = languages.filter(
                 lang => lang.value !== appState.spokenLanguage
             );
@@ -554,37 +1121,34 @@
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.textContent = lang.label;
-                btn.onclick = () => selectLanguageToLearn(lang.value, btn);
+                btn.onclick = (e) => selectLanguageToLearn(e, lang.value);
                 grid.appendChild(btn);
             });
 
-            // Update title
-            const spokenLangMap = {
-                english: 'English',
-                amharic: 'Amharic',
-                oromo: 'Afan Oromo',
-                somali: 'Af Somali',
-            };
             document.getElementById('learnQuestionTitle').textContent =
                 `What would you like to learn?`;
         }
 
         // ===== SELECT LANGUAGE TO LEARN =====
-        function selectLanguageToLearn(language, buttonElement) {
-            playSound('click');
+        function selectLanguageToLearn(event, language) {
+            playHappyClick();
             appState.languageToLearn = language;
 
-            // Update button states
-            document.querySelectorAll('#languageLearnScreen .option-btn').forEach(btn => {
-                btn.classList.remove('selected');
+            const btn = event.target.closest('.option-btn');
+            
+            document.querySelectorAll('#languageLearnScreen .option-btn').forEach(b => {
+                b.classList.remove('selected');
             });
-            buttonElement.classList.add('selected');
+            btn.classList.add('selected');
+
+            createRipple(event, btn);
 
             setTimeout(() => {
+                playConfettiSound();
+                playSuccessSound();
                 showSuccessScreen();
-                playSound('success');
                 createConfetti();
-            }, 300);
+            }, 400);
         }
 
         // ===== SHOW SUCCESS SCREEN =====
@@ -596,20 +1160,19 @@
                 somali: 'Af Somali',
             };
 
-            const spokenLang = languageMap[appState.spokenLanguage];
             const learnLang = languageMap[appState.languageToLearn];
 
             document.getElementById('successTitle').textContent = '🎉 Perfect!';
             document.getElementById('successMessage').textContent =
-                `You selected ${learnLang} as your next language to learn. Your journey starts now, ${appState.user.firstName}!`;
+                `You selected ${learnLang} to learn! Your journey starts now, ${appState.user.firstName}! 🚀`;
 
             showScreen('successScreen');
         }
 
         // ===== CREATE CONFETTI =====
         function createConfetti() {
-            const emojis = ['🎉', '⭐', '🌟', '✨', '🚀', '📚', '🌍', '💫'];
-            for (let i = 0; i < 30; i++) {
+            const emojis = ['🎉', '⭐', '🌟', '✨', '🚀', '📚', '🌍', '💫', '🎊', '🎈', '🎁', '💝'];
+            for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
@@ -618,74 +1181,133 @@
                     confetti.style.top = '-20px';
                     document.body.appendChild(confetti);
 
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 50);
+                    setTimeout(() => confetti.remove(), 2500);
+                }, i * 20);
             }
         }
 
-        // ===== SEND DATA TO BACKEND =====
-        async function startLearning() {
-            const startBtn = document.querySelector('#successScreen .btn-primary');
-            const btnText = document.getElementById('startBtnText');
-            const btnLoader = document.getElementById('startBtnLoader');
+        // ===== CREATE RIPPLE EFFECT =====
+        function createRipple(event, btn) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            btn.appendChild(ripple);
+        }
 
-            startBtn.disabled = true;
-            btnText.style.display = 'none';
-            btnLoader.style.display = 'inline-block';
+        // ===== START LEARNING =====
+        function startLearning() {
+            const btn = document.querySelector('.btn-primary');
+            const btnText = document.getElementById('startBtnText');
+            const loader = document.getElementById('startBtnLoader');
+
+            const setLoadingState = (isLoading) => {
+                btn.disabled = isLoading;
+                btnText.style.display = isLoading ? 'none' : 'inline';
+                loader.style.display = isLoading ? 'inline-block' : 'none';
+            };
+
+            console.log('[v0] startLearning() clicked');
+            setLoadingState(true);
 
             try {
-                console.log('[v0] Sending user data to backend:', {
-                    telegramId: appState.user.id,
-                    firstName: appState.user.firstName,
-                    username: appState.user.username,
-                    spokenLanguage: appState.spokenLanguage,
-                    languageToLearn: appState.languageToLearn,
-                });
+                if (!appState.user || !appState.user.id) {
+                    throw new Error('User not loaded yet (Telegram init not finished)');
+                }
 
-                const response = await fetch(`${appState.backendUrl}/api/users/onboard/`, {
+                const payload = {
+                    telegram_id: appState.user.id,
+                    first_name: appState.user.firstName,
+                    username: appState.user.username,
+                    spoken_language: appState.spokenLanguage,
+                    language_to_learn: appState.languageToLearn,
+                };
+
+                // Post to backend root endpoint
+                const endpoint = new URL('/', appState.backendUrl).toString();
+                console.log('[v0] POST ->', endpoint);
+                console.log('[v0] Payload ->', payload);
+
+                playConfettiSound();
+
+                fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        telegram_id: appState.user.id,
-                        first_name: appState.user.firstName,
-                        username: appState.user.username,
-                        spoken_language: appState.spokenLanguage,
-                        language_to_learn: appState.languageToLearn,
-                    }),
-                });
+                    credentials: 'omit',
+                    body: JSON.stringify(payload),
+                })
+                    .then(async (response) => {
+                        const text = await response.text();
+                        let data;
+                        try {
+                            data = text ? JSON.parse(text) : null;
+                        } catch {
+                            data = { raw: text };
+                        }
 
-                const data = await response.json();
+                        console.log('[v0] Backend raw response:', text);
 
-                if (response.ok) {
-                    console.log('[v0] Backend response successful:', data);
-                    btnText.textContent = '✓ Done! Loading...';
-                    btnText.style.display = 'inline';
-                    btnLoader.style.display = 'none';
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${text}`);
+                        }
+                        return data;
+                    })
+                    .then((data) => {
+                        console.log('[v0] Backend parsed response:', data);
+                        btnText.textContent = '✓ Success!';
+                        setLoadingState(false);
 
-                    // Simulate loading and transition
-                    setTimeout(() => {
-                        alert('Welcome to Lisan! Your learning journey begins. 🌍');
-                    }, 1000);
-                } else {
-                    throw new Error(data.error || 'Failed to save data');
-                }
+                        if (window.Telegram && window.Telegram.WebApp) {
+                            setTimeout(() => {
+                                window.Telegram.WebApp.close();
+                            }, 1500);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('[v0] Request failed:', error);
+                        btnText.textContent = '✗ Try Again';
+                        setLoadingState(false);
+                    });
             } catch (error) {
-                console.error('[v0] Error:', error);
-                btnText.textContent = 'Start Learning';
-                btnText.style.display = 'inline';
-                btnLoader.style.display = 'none';
-                startBtn.disabled = false;
-                alert('❌ Error: ' + error.message + '\n\nMake sure your Django backend is running at ' + appState.backendUrl);
+                console.error('[v0] startLearning() aborted:', error);
+                btnText.textContent = '✗ Try Again';
+                setLoadingState(false);
             }
         }
 
-        // ===== INITIALIZE APP =====
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('[v0] App initializing...');
-            initializeTelegram();
-            typewriterEffect();
-        });
+        // ===== INITIALIZE THE APP =====
+        function startApp() {
+            const mainContainer = document.getElementById('mainContainer');
+            mainContainer.style.display = 'block';
+
+            initializeTelegram().then(() => {
+                // Transition to greeting after loading completes
+                setTimeout(() => {
+                    transitionToGreeting();
+                }, 500);
+
+                // Handle greeting screen tap
+                const greetingScreen = document.getElementById('greetingScreen');
+                greetingScreen.addEventListener('click', transitionToLanguageSelection);
+            });
+        }
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startApp);
+        } else {
+            startApp();
+        }
     </script>
 </body>
+</html>
