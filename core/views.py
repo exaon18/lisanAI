@@ -1,5 +1,6 @@
 import json
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
@@ -28,16 +29,15 @@ def index(request):
             # first_name = data.get('first_name')
             # ...
             print(data)  # For debugging purposes, print the parsed data
-            # Create a new User instance
-            
             telegram_id = data.get('telegram_id')
             first_name = data.get('first_name')
             last_name = data.get('last_name')
             username = data.get('username')
             spoken_languages = data.get('spoken_language')
             lang_to_learn = data.get('language_to_learn')
-            created,user= User.objects.get_or_create(
-                telegram_id=telegram_id,
+
+            user, created = User.objects.get_or_create(
+                telegram_id=str(telegram_id) if telegram_id is not None else '',
                 defaults={
                     'first_name': first_name,
                     'last_name': last_name,
@@ -46,7 +46,26 @@ def index(request):
                     'lang_to_learn': lang_to_learn
                 }
             )
-            response = JsonResponse({'status': 'success', 'message': 'Data received'})
+
+            # If user already existed, keep profile up to date.
+            updated = False
+            for field, value in (
+                ('first_name', first_name),
+                ('last_name', last_name),
+                ('username', username),
+                ('spoken_languages', spoken_languages),
+                ('lang_to_learn', lang_to_learn),
+            ):
+                if value is not None and getattr(user, field) != value:
+                    setattr(user, field, value)
+                    updated = True
+            if updated:
+                user.save(update_fields=['first_name', 'last_name', 'username', 'spoken_languages', 'lang_to_learn'])
+
+            # Lightweight session marker (optional)
+            request.session['telegram_id'] = user.telegram_id
+
+            response = JsonResponse({'status': 'success', 'message': 'Data received', 'created': created})
             if origin:
                 response['Access-Control-Allow-Origin'] = origin
                 response['Vary'] = 'Origin'
@@ -63,3 +82,22 @@ def index(request):
         response['Access-Control-Allow-Origin'] = origin
         response['Vary'] = 'Origin'
     return response
+
+def dashboard(request):
+    telegram_id = request.session.get('telegram_id')
+    if not telegram_id:
+        return HttpResponse('No active session', status=401)
+
+    userdb = User.objects.filter(telegram_id=telegram_id).first()
+    if not userdb:
+        return HttpResponse('User not found', status=404)
+
+    print(f'[lisan] Session user: {userdb.first_name} ({userdb.telegram_id})')
+    return JsonResponse({
+        'telegram_id': userdb.telegram_id,
+        'first_name': userdb.first_name,
+        'last_name': userdb.last_name,
+        'username': userdb.username,
+        'spoken_languages': userdb.spoken_languages,
+        'lang_to_learn': userdb.lang_to_learn,
+    })
