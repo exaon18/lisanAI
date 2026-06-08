@@ -880,17 +880,70 @@
 
     <script>
         // ===== APP STATE =====
-        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const defaultBackendUrl = isLocalHost
-            ? `${window.location.protocol}//${window.location.hostname}:8000`
-            : window.location.origin;
-
-        let appState = {
-            user: null,
-            spokenLanguage: null,
+        const appState = {
+            user: {
+                id: null,
+                firstName: 'User',
+                username: 'anonymous',
+                lastName: '',
+            },
+            selectedLanguage: null,
             languageToLearn: null,
-            backendUrl: defaultBackendUrl,
+            isNewUser: null,
         };
+
+        function setLoadingMessage(message) {
+            const loadingText = document.querySelector('.loading-text');
+            if (loadingText) {
+                loadingText.textContent = message;
+            }
+        }
+
+        async function postInitUserToBackend() {
+            if (!appState.user || !appState.user.id) {
+                throw new Error('Cannot sync init data: Telegram user is missing');
+            }
+
+            const endpoint = new URL('/', appState.backendUrl).toString();
+            const payload = {
+                telegram_id: appState.user.id,
+                first_name: appState.user.firstName,
+                last_name: appState.user.lastName || '',
+                username: appState.user.username,
+                spoken_language: appState.spokenLanguage,
+                language_to_learn: appState.languageToLearn,
+                client_received_at: appState.telegramDataReceivedAt,
+                onboarding_stage: 'init',
+            };
+
+            console.log('[v0] Init sync POST ->', endpoint);
+            console.log('[v0] Init sync payload ->', payload);
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'omit',
+                body: JSON.stringify(payload),
+            });
+
+            const text = await response.text();
+            let data;
+            try {
+                data = text ? JSON.parse(text) : null;
+            } catch {
+                data = { raw: text };
+            }
+
+            console.log('[v0] Init sync raw response:', text);
+
+            if (!response.ok) {
+                throw new Error(`Init sync failed HTTP ${response.status}: ${text}`);
+            }
+
+            return data;
+        }
 
         // ===== TELEGRAM INITIALIZATION WITH LOADING SCREEN =====
         function initializeTelegram() {
@@ -904,11 +957,13 @@
                             id: 123456789,
                             first_name: 'User',
                             username: 'anonymous',
+                            last_name: '',
                         };
 
                         appState.user = {
                             id: userData.id,
                             firstName: userData.first_name,
+                            lastName: userData.last_name || '',
                             username: userData.username || userData.first_name,
                         };
 
@@ -917,6 +972,7 @@
                         appState.user = {
                             id: 123456789,
                             firstName: 'Ahmed',
+                            lastName: 'Khan',
                             username: 'Ahmed_Khan',
                         };
                         console.log('[v0] Using fallback user data (not in Telegram)');
@@ -926,11 +982,59 @@
             });
         }
 
-        // ===== TRANSITION TO GREETING SCREEN (AFTER USERNAME RECEIVED) =====
+        // ===== CHECK IF USER EXISTS IN BACKEND =====
+        async function checkUserExists() {
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'check',
+                        telegram_id: appState.user.id,
+                    }),
+                });
+
+                const data = await response.json();
+                console.log('[v0] Backend check response:', data);
+
+                if (data.status === true) {
+                    // User exists - update state with full user data
+                    appState.isNewUser = false;
+                    appState.user.firstName = data.first_name || appState.user.firstName;
+                    appState.user.lastName = data.last_name || appState.user.lastName;
+                    appState.user.username = data.username || appState.user.username;
+                    appState.user.spokenLanguage = data.spoken_languages;
+                    appState.user.languageToLearn = data.lang_to_learn;
+                    console.log('[v0] Existing user found, redirecting to dashboard');
+                    return true; // User exists
+                } else {
+                    // New user - proceed with signup
+                    appState.isNewUser = true;
+                    console.log('[v0] New user detected, starting signup flow');
+                    return false; // New user
+                }
+            } catch (error) {
+                console.error('[v0] Backend check failed:', error);
+                // Default to new user flow on error
+                appState.isNewUser = true;
+                return false;
+            }
+        }
+
+        // ===== TRANSITION TO GREETING SCREEN (FOR NEW USERS) =====
         function transitionToGreeting() {
             const loadingScreen = document.getElementById('loadingScreen');
             const greetingScreen = document.getElementById('greetingScreen');
             const userGreeting = document.getElementById('userGreeting');
+
+            // Only transition if we have the user's first name
+            if (!appState.user.firstName || appState.user.firstName === 'User') {
+                console.log('[v0] Waiting for user data...');
+                setTimeout(transitionToGreeting, 500);
+                return;
+            }
 
             loadingScreen.style.animation = 'fadeOut 0.6s ease-out forwards';
             setTimeout(() => {
@@ -938,6 +1042,26 @@
                 greetingScreen.classList.add('active');
                 userGreeting.textContent = appState.user.firstName;
                 startTypewriterAnimation();
+            }, 600);
+        }
+
+        // ===== REDIRECT TO DASHBOARD (FOR EXISTING USERS) =====
+        function redirectToDashboard() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            loadingScreen.style.animation = 'fadeOut 0.6s ease-out forwards';
+            setTimeout(() => {
+                console.log('[v0] Redirecting to dashboard...');
+                // Update loading text to show redirect
+                const loadingText = loadingScreen.querySelector('.loading-text');
+                if (loadingText) {
+                    loadingText.textContent = 'Redirecting to dashboard...';
+                }
+                
+                // Redirect after a short delay for UX
+                setTimeout(() => {
+                    window.location.href = '/dashboard'; // Change to your dashboard URL
+                }, 1500);
             }, 600);
         }
 
@@ -1224,21 +1348,22 @@
                 }
 
                 const payload = {
+                    type: 'finish',
                     telegram_id: appState.user.id,
                     first_name: appState.user.firstName,
+                    last_name: appState.user.lastName,
                     username: appState.user.username,
-                    spoken_language: appState.spokenLanguage,
-                    language_to_learn: appState.languageToLearn,
+                    spoken_languages: appState.spokenLanguage,
+                    lang_to_learn: appState.languageToLearn,
                 };
 
-                // Post to backend root endpoint
-                const endpoint = new URL('/', appState.backendUrl).toString();
-                console.log('[v0] POST ->', endpoint);
+                // Post to backend onboard endpoint (base domain)
+                console.log('[v0] POST ->', window.location.origin + '/');
                 console.log('[v0] Payload ->', payload);
 
                 playConfettiSound();
 
-                fetch(endpoint, {
+                fetch('/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1264,13 +1389,26 @@
                     })
                     .then((data) => {
                         console.log('[v0] Backend parsed response:', data);
-                        btnText.textContent = '✓ Success!';
-                        setLoadingState(false);
-
-                        if (window.Telegram && window.Telegram.WebApp) {
+                        
+                        if (data.status === true) {
+                            btnText.textContent = '✓ Success!';
+                            setLoadingState(false);
+                            
+                            // Update app state with response data
+                            appState.user.id = data.user_id;
+                            appState.user.firstName = data.first_name;
+                            appState.user.lastName = data.last_name || '';
+                            appState.user.username = data.username;
+                            appState.user.spokenLanguage = data.spoken_languages;
+                            appState.user.languageToLearn = data.lang_to_learn;
+                            
+                            // Redirect to dashboard after short delay
                             setTimeout(() => {
-                                window.Telegram.WebApp.close();
+                                console.log('[v0] Signup successful, redirecting to dashboard');
+                                window.location.href = '/dashboard'; // Change to your dashboard URL
                             }, 1500);
+                        } else {
+                            throw new Error('Backend returned status: false');
                         }
                     })
                     .catch((error) => {
@@ -1286,20 +1424,38 @@
         }
 
         // ===== INITIALIZE THE APP =====
-        function startApp() {
+        async function startApp() {
             const mainContainer = document.getElementById('mainContainer');
             mainContainer.style.display = 'block';
 
-            initializeTelegram().then(() => {
-                // Transition to greeting after loading completes
-                setTimeout(() => {
-                    transitionToGreeting();
-                }, 500);
+            try {
+                // Step 1: Initialize Telegram and get user data
+                await initializeTelegram();
+                console.log('[v0] Telegram initialized:', appState.user);
 
-                // Handle greeting screen tap
-                const greetingScreen = document.getElementById('greetingScreen');
-                greetingScreen.addEventListener('click', transitionToLanguageSelection);
-            });
+                // Step 2: Check if user exists in backend
+                const userExists = await checkUserExists();
+                
+                if (userExists) {
+                    // Existing user - redirect to dashboard
+                    console.log('[v0] User exists, redirecting to dashboard');
+                    setTimeout(() => {
+                        redirectToDashboard();
+                    }, 500);
+                } else {
+                    // New user - show greeting and proceed with signup
+                    console.log('[v0] New user, showing greeting');
+                    setTimeout(() => {
+                        transitionToGreeting();
+                    }, 500);
+
+                    // Handle greeting screen tap
+                    const greetingScreen = document.getElementById('greetingScreen');
+                    greetingScreen.addEventListener('click', transitionToLanguageSelection);
+                }
+            } catch (error) {
+                console.error('[v0] App initialization error:', error);
+            }
         }
 
         // Start when DOM is ready
