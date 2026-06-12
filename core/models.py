@@ -10,5 +10,6 @@ class User(models.Model):
     lang_to_learn = models.CharField(max_length=255, blank=True, null=True)  # Comma-separated list of languages
     last_login = models.DateTimeField(blank=True, null=True)
     userpic=models.CharField(max_length=255, blank=True, null=True)
+    level=models.IntegerField(default=1)
     def __str__(self):
         return f"{self.first_name} ({self.telegram_id})"

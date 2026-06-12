@@ -71,7 +71,8 @@ def index(request):
                     username=username,
                     spoken_languages=spoken_languages,
                     lang_to_learn=lang_to_learn,
-                    userpic=userpic
+                    userpic=userpic,
+                    level=1
                 )
                 user.save()
                 login(request, user)  # Log the user in (creates a session)s
@@ -115,4 +116,12 @@ def dashboard(request):
         return HttpResponse('User not found', status=404)
 
     print(f'[lisan] Session user: {userdb.first_name} ({userdb.telegram_id})')
-    return render(request, 'dashboard.html', {'user': userdb})
+    return render(request, 'dashboard.html', {'user': userdb, 
+                                              'level': userdb.level , 
+                                              'spoken_languages': userdb.spoken_languages, 
+                                              'lang_to_learn': userdb.lang_to_learn,
+                                                'userpic': userdb.userpic,
+                                                'first_name': userdb.first_name,
+                                                'last_name': userdb.last_name,
+                                                'username': userdb.username
+                                              })
