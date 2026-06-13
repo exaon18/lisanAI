@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from google import genai
+from google.genai import types
 # Create your views here.
 @csrf_exempt
 def index(request):
@@ -147,7 +149,7 @@ def game_validate(request):
                f"Welcome to the game! This is the first level where you will learn basic greetings in {lang_to_learn}. introduce yourself to Hana by saing sime is and your name "},
     }
             userpreferance=int(str(data.get('level')))    
-            if userpreferance>userdb.level:
+            if userpreferance>userdb.level: 
                 return JsonResponse({'status': 'error', 'message': 'Level preference does not match user level'}, status=400)   
             if not userdb:
                 return HttpResponse('User not found', status=404)
@@ -159,3 +161,48 @@ def game_validate(request):
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
             return JsonResponse({'status': 'success', 'new_level': userdb.level})
+def start_game(request, level):
+    if 'user_id' not in request.session:
+        from django.shortcuts import redirect
+        return redirect('/')
+    if request.method == 'POST':
+       
+        telegram_id = request.session.get('user_id')
+        userdb = User.objects.filter(telegram_id=telegram_id).first()
+        if not userdb:
+            return HttpResponse('User not found', status=404)
+        if userdb.level < level:
+            return JsonResponse({'status': 'error', 'message': 'User level too low to start this game'}, status=403)
+        data = json.loads(request.body or b'{}')
+        message = data.get('message', '')
+        gamedata={
+            '1': {"system_instruction":(
+            f"You are liya, a friendly local girl meeting the user in the capital city of {userdb.lang_to_learn}. use emojies and be friendly and encouraging. and warm "
+            f"The user is trying to practice introducing themselves to you in {userdb.lang_to_learn}. "
+
+            "RULES:\n"
+            f"1. Only speak in short, natural, single-sentence {userdb.lang_to_learn} responses. and give the trnaslation of your responses in {userdb.spoken_languages} in clear formatted manner so the user cna understand adn give him a hint on how he can repond to you in {userdb.lang_to_learn}\n"
+            "2. Be encouraging but realistic.\n"
+            "3. WIN CONDITION: If the user successfully greets you and states their name dont worry if they got a few spelling mistakes, but they should be able to say their name in a way that is understandable and clear, "
+            f"clearly in {userdb.lang_to_learn}, accept the introduction "
+            "warmly and you MUST append the exact token '[WIN]' to the very end of your response."
+        ),
+        "xp_reward": 30,},
+        }
+        client = genai.Client(api_key="AQ.Ab8RN6LTMhuZqku_TMyKr7tSNH1xGh4zErhm2Xt53aCZUgRhyw")
+        chat=client.chats.create(model="gemini-3-flash-preview", config=types.GenerateContentConfig(
+            system_instruction=gamedata[str(level)]['system_instruction'],
+            temperature=0.7, 
+        ))
+        respononse = chat.send_message(message)
+        if '[WIN]' in respononse.text:
+            userdb.level += 1
+            userdb.xp += gamedata[str(level)]['xp_reward']
+            userdb.save()
+            return JsonResponse({'status': 'win', 
+                                 'message': f'Congratulations! now you know to introduce yourself in {userdb.lang_to_learn}',
+                                   'new_level': userdb.level})
+        print(f"Model response: {respononse.text}")  # For debugging purposes, print the model's response
+        return JsonResponse({'status': 'success', 'message': respononse.text})
+        # Here you would add your game starting logic. For demonstration, we'll just return a success message.
+    return JsonResponse({'status': 'success', 'message': 'Game started!'})
