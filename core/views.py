@@ -124,4 +124,38 @@ def dashboard(request):
                                                 'first_name': userdb.first_name,
                                                 'last_name': userdb.last_name,
                                                 'username': userdb.username
-                                              })
+                                              }
+                                              )
+def game_validate(request):
+    print("Game validate endpoint hit")
+    
+    if 'user_id' not in request.session:
+        from django.shortcuts import redirect
+        return redirect('/')
+    
+    
+    if request.method == 'POST':
+        try: 
+            print(f"Received data: {request.body}")  # For debugging purposes, print the raw request body           
+            data = json.loads(request.body or b'{}')
+            telegram_id = request.session.get('user_id')
+            userdb = User.objects.filter(telegram_id=telegram_id).first()
+            lang_to_learn = userdb.lang_to_learn
+            level={
+        '1': {"title": "introduction",
+               "description": 
+               f"Welcome to the game! This is the first level where you will learn basic greetings in {lang_to_learn}. introduce yourself to Hana by saing sime is and your name "},
+    }
+            userpreferance=int(str(data.get('level')))    
+            if userpreferance>userdb.level:
+                return JsonResponse({'status': 'error', 'message': 'Level preference does not match user level'}, status=400)   
+            if not userdb:
+                return HttpResponse('User not found', status=404)
+            return JsonResponse({'status': 'success',
+                                  "level":userpreferance,
+                                  'title': level[str(userpreferance)]['title'],
+                                  'description': level[str(userpreferance)]['description']})
+            # Here you would add your game validation logic. For demonstration, we'll just increment the user's level.
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+            return JsonResponse({'status': 'success', 'new_level': userdb.level})

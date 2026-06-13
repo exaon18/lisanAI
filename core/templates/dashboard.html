@@ -460,6 +460,193 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
+        /* Play Now Tooltip */
+        .play-now-tooltip {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            font-weight: 700;
+            font-size: 14px;
+            color: #FF9500;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 5;
+            animation: float-tooltip 2s ease-in-out infinite;
+        }
+
+        .play-now-tooltip::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.95) 100%);
+            border-top: 2px solid rgba(255, 255, 255, 0.8);
+            border-left: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+            rotate: 45deg;
+        }
+
+        @keyframes float-tooltip {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* Game Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .game-modal {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 245, 0.95) 100%);
+            backdrop-filter: blur(40px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 40px;
+            padding: 40px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transform: scale(0.8) translateY(30px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .game-modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FF9500 0%, #FFB347 100%);
+            border-radius: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            box-shadow: 0 12px 24px rgba(255, 149, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            margin-bottom: 20px;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .game-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .game-mission {
+            font-size: 14px;
+            color: rgba(51, 51, 51, 0.8);
+            line-height: 1.6;
+            margin-bottom: 28px;
+            padding: 16px;
+            background: rgba(255, 149, 0, 0.08);
+            border-radius: 16px;
+            border-left: 4px solid #FF9500;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #FF9500 0%, #FFB347 100%);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 12px 24px rgba(255, 149, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 20px 40px rgba(255, 149, 0, 0.5),
+                0 0 30px rgba(255, 149, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .start-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 8px 16px rgba(255, 149, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: rgba(51, 51, 51, 0.6);
+            transition: all 0.2s ease;
+            padding: 4px;
+        }
+
+        .modal-close:hover {
+            color: rgba(51, 51, 51, 1);
+            transform: rotate(90deg);
+        }
+
         @media (max-width: 480px) {
             .btn-3d {
                 height: 120px;
@@ -572,6 +759,17 @@
         </div>
     </div>
 
+    <!-- Game Modal -->
+    <div class="modal-overlay" id="gameModal">
+        <div class="game-modal">
+            <button class="modal-close" onclick="closeGameModal()">✕</button>
+            <div class="level-badge" id="modalLevelBadge">1</div>
+            <h2 class="game-title" id="modalGameTitle">Loading...</h2>
+            <div class="game-mission" id="modalGameDescription">Get ready for an amazing learning experience!</div>
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+
     <!-- Footer Navigation -->
     <div class="footer-nav">
         <button class="nav-btn active" onclick="goToProfile()">
@@ -589,8 +787,10 @@
     </div>
 
     <script>
-        // User level from Django backend
+        // User data from Django backend
         const userLevel = parseInt('{{ level }}') || 1;
+        const username = '{{ username }}' || 'user';
+        let currentSelectedLevel = null;
 
         // Generate random background stars and shapes
         function generateBackgroundDecoration() {
@@ -633,12 +833,15 @@
         // Initialize level buttons based on user level
         function initializeLevels() {
             const levelButtons = document.querySelectorAll('.level-btn-circle');
+            let highestUnlockedBtn = null;
+
             levelButtons.forEach((btn, index) => {
                 const levelNum = index + 1;
                 
                 if (levelNum <= userLevel) {
                     // Unlock level
                     btn.classList.remove('locked');
+                    highestUnlockedBtn = btn;
                     
                     // Add color to unlocked levels
                     if (levelNum === 1) {
@@ -652,15 +855,96 @@
                     btn.disabled = true;
                 }
             });
+
+            // Add "Play Now" tooltip to highest unlocked level
+            if (highestUnlockedBtn) {
+                const levelPos = highestUnlockedBtn.closest('.level-position');
+                const tooltip = document.createElement('div');
+                tooltip.className = 'play-now-tooltip';
+                tooltip.textContent = '✨ Play Now';
+                levelPos.style.position = 'relative';
+                levelPos.appendChild(tooltip);
+            }
         }
 
-        function playLevel(level) {
-            if (level <= userLevel) {
-                console.log('[v0] Level clicked:', level);
-                alert(`Starting Level ${level}!`);
-            } else {
+        // Validate level and fetch game data
+        async function playLevel(level) {
+            if (level > userLevel) {
                 alert('Complete previous levels to unlock this one!');
+                return;
             }
+
+            console.log('[v0] Level tapped:', level, 'Username:', username);
+            currentSelectedLevel = level;
+
+            try {
+                const response = await fetch('game_validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        level: level,
+                        username: username
+                    })
+                });
+
+                const data = await response.json();
+                console.log('[v0] Game data received:', data);
+
+                if (data.status === 'success') {
+                    displayGameModal(data);
+                } else {
+                    alert('Error loading game. Please try again.');
+                }
+            } catch (error) {
+                console.error('[v0] Error:', error);
+                alert('Connection error. Please try again.');
+            }
+        }
+
+        // Display game modal with received data
+        function displayGameModal(gameData) {
+            document.getElementById('modalLevelBadge').textContent = gameData.level;
+            document.getElementById('modalGameTitle').textContent = gameData.title;
+            document.getElementById('modalGameDescription').textContent = gameData.description;
+            
+            const modal = document.getElementById('gameModal');
+            modal.classList.add('active');
+        }
+
+        // Close game modal
+        function closeGameModal() {
+            const modal = document.getElementById('gameModal');
+            modal.classList.remove('active');
+            currentSelectedLevel = null;
+        }
+
+        // Start game
+        function startGame() {
+            if (currentSelectedLevel) {
+                console.log('[v0] Starting game for level:', currentSelectedLevel);
+                // Redirect to game or start game logic
+                alert(`Starting Level ${currentSelectedLevel}!`);
+                closeGameModal();
+            }
+        }
+
+        // Get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
         function goToProfile() {
@@ -678,10 +962,17 @@
             alert('Random Call coming soon!');
         }
 
-        // Initialize on load
+        // Close modal on outside click
         document.addEventListener('DOMContentLoaded', function() {
             generateBackgroundDecoration();
             initializeLevels();
+
+            // Close modal when clicking outside
+            document.getElementById('gameModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeGameModal();
+                }
+            });
         });
     </script>
 </body>
