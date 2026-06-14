@@ -12,5 +12,6 @@ class User(models.Model):
     userpic=models.CharField(max_length=255, blank=True, null=True)
     level=models.IntegerField(default=1)
     xp=models.IntegerField(default=0)
+    streak=models.IntegerField(default=0)
     def __str__(self):
         return f"{self.first_name} ({self.telegram_id})"

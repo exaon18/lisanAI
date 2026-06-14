@@ -55,7 +55,15 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'lisan.urls'
+import os
+from dotenv import load_dotenv
 
+# This looks for the .env file locally (for testing)
+# If it doesn't find it (like on the server), it skips it and uses system variables
+load_dotenv()
+
+# This is how you call it in your views:
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
