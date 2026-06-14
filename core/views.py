@@ -152,6 +152,15 @@ def game_validate(request):
         '2': {"title": "taxi ride",
                "description": 
                f"yayyyy This is the second level where you will learn to order a taxi in {lang_to_learn}. "},
+        '3': {"title": "shopping",
+               "description": 
+               f"wohoooo This is the third level where you will learn to shop for clothes in {lang_to_learn}. good lcukkkk "},
+        '4': {"title": "cafe",
+               "description": 
+               f"yayyyy This is the fourth level where you will learn to order at a cafe in {lang_to_learn}. hope you like your coffeeee "},
+        '5': {"title": "asking for directions",
+               "description": 
+               f"wohoooo This is the fifth level where you will learn to ask for directions in {lang_to_learn}. have fun exploringggg "},
         
     }
             userpreferance=int(str(data.get('level')))    
